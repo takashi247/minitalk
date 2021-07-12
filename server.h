@@ -1,5 +1,5 @@
-#ifndef MINITALK_H
-# define MINITALK_H
+#ifndef SERVER_H
+# define SERVER_H
 
 # define MSG_USR1_SUCCESS "received SIGUSR1\n"
 # define MSG_USR2_SUCCESS "received SIGUSR2\n"

@@ -1,6 +1,6 @@
 #include <signal.h>
 #include <unistd.h>
-#include "minitalk.h"
+#include "server.h"
 
 size_t
     ft_strlen(const char *s)
