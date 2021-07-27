@@ -1,0 +1,21 @@
+# Project files
+client
+server
+
+# General
+.DS_Store
+
+# Object files
+*.o
+
+# Executables
+a.out
+*.out
+*.exe
+
+# For debug
+*.dSYM/
+
+# Libraries
+*.lib
+*.a
