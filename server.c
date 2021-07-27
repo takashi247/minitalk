@@ -1,34 +1,65 @@
-#include <signal.h>
-#include <unistd.h>
 #include "server.h"
 
-size_t
-    ft_strlen(const char *s)
-{
-    size_t  len;
+static volatile char
+	*g_server;
 
-    len = 0;
-    while (s[len])
-        len++;
-    return (len);
+void
+	ft_free(char **s)
+{
+	free(*s);
+	*s = NULL;
 }
 
 static void
-    sig_usr(int signo)
+	add_binary_str(char *s)
 {
-    if (signo == SIGUSR1)
-        write(STDOUT_FILENO, MSG_USR1_SUCCESS, ft_strlen(MSG_USR1_SUCCESS));
-    else if (signo == SIGUSR2)
-        write(STDOUT_FILENO, MSG_USR2_SUCCESS, ft_strlen(MSG_USR2_SUCCESS));
+	char	*tmp;
+
+	if (s)
+	{
+		if (!g_server)
+			g_server = ft_strdup(s);
+		else
+		{
+			tmp = (char *)g_server;
+			g_server = ft_strjoin((const char *)g_server, s);
+			ft_free(&tmp);
+		}
+	}
+}
+
+static void
+	sig_usr(int signo)
+{
+	size_t	len;
+
+	if (signo == SIGUSR1)
+		add_binary_str(SIGUSR1_CHAR);
+	else if (signo == SIGUSR2)
+		add_binary_str(SIGUSR2_CHAR);
+	if (!g_server)
+		exit(FAILURE);
+	len = ft_strlen((const char *)g_server);
+	if (len == 8)
+	{
+		ft_putendl_fd((char *)g_server, STDOUT_FILENO);
+		ft_free((char **)(&g_server));
+	}
 }
 
 int
-    main(void)
+	main(void)
 {
-    if (signal(SIGUSR1, sig_usr) == SIG_ERR)
-        write(STDERR_FILENO, MSG_USR1_FAILURE, ft_strlen(MSG_USR1_FAILURE));
-    if (signal(SIGUSR2, sig_usr) == SIG_ERR)
-        write(STDERR_FILENO, MSG_USR2_FAILURE, ft_strlen(MSG_USR2_FAILURE));
-    for ( ; ; )
-        pause();
+	const int	server_pid = getpid();
+	const char	*pid_str = ft_itoa(server_pid);
+
+	write(STDOUT_FILENO, pid_str, ft_strlen(pid_str));
+	write(STDOUT_FILENO, "\n", 1);
+	g_server = NULL;
+	if (signal(SIGUSR1, sig_usr) == SIG_ERR)
+		write(STDERR_FILENO, MSG_USR1_FAILURE, ft_strlen(MSG_USR1_FAILURE));
+	if (signal(SIGUSR2, sig_usr) == SIG_ERR)
+		write(STDERR_FILENO, MSG_USR2_FAILURE, ft_strlen(MSG_USR2_FAILURE));
+	for ( ; ; )
+		pause();
 }
