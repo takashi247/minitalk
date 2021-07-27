@@ -1,6 +1,6 @@
 #include "server.h"
 
-static volatile char
+static volatile	char
 	*g_server;
 
 void
@@ -42,7 +42,7 @@ static void
 	len = ft_strlen((const char *)g_server);
 	if (len == 8)
 	{
-		ft_putendl_fd((char *)g_server, STDOUT_FILENO);
+		ft_putstr_fd((char *)g_server, STDOUT_FILENO);
 		ft_free((char **)(&g_server));
 	}
 }
@@ -60,6 +60,6 @@ int
 		write(STDERR_FILENO, MSG_USR1_FAILURE, ft_strlen(MSG_USR1_FAILURE));
 	if (signal(SIGUSR2, sig_usr) == SIG_ERR)
 		write(STDERR_FILENO, MSG_USR2_FAILURE, ft_strlen(MSG_USR2_FAILURE));
-	for ( ; ; )
+	while (1)
 		pause();
 }
