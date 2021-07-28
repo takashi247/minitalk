@@ -62,6 +62,7 @@ static void
 	unsigned char			c;
 	const pid_t				client_pid = siginfo->si_pid;
 
+	(void)context;
 	if (signo == SIGUSR1)
 		append_char(&str_bin, (unsigned char)CHAR_ZERO);
 	else if (signo == SIGUSR2)
