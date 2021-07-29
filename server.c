@@ -1,5 +1,8 @@
 #include "server.h"
 
+static volatile sig_atomic_t
+	server_flag;
+
 void
 	ft_free_str(char **s)
 {
@@ -85,32 +88,64 @@ static void
 static void
 	sig_usr(int signo, siginfo_t *siginfo, void *context)
 {
-	static volatile int		len;
-	static char				*str_bin;
-	static unsigned char	*str;
-	unsigned char			c;
-	const pid_t				client_pid = siginfo->si_pid;
+	static volatile sig_atomic_t	len;
+	static volatile sig_atomic_t	consecutive_zeros;
+	const pid_t						client_pid = siginfo->si_pid;
 
 	(void)context;
 	if (signo == SIGUSR1)
-		append_char(&str_bin, CHAR_ZERO);
+	{
+		server_flag = 1;
+		consecutive_zeros++;
+	}
 	else if (signo == SIGUSR2)
-		append_char(&str_bin, CHAR_ONE);
-	kill(client_pid, SIGUSR1);
+	{
+		server_flag = 2;
+		if (consecutive_zeros)
+			consecutive_zeros = 0;
+	}
 	len++;
 	if (len == 8)
 	{
-		c = (unsigned char)ft_atoi_bin(str_bin);
-		append_char_u(&str, c);
+		if (consecutive_zeros == 8)
+			kill(client_pid, SIGUSR1);
+		len = 0;
+		consecutive_zeros = 0;
+	}
+}
+
+static void
+	exit_with_error_msg(char *error_msg)
+{
+	ft_putendl_fd(error_msg, STDERR_FILENO);
+	exit(FAILURE);
+}
+
+static void
+	run_server(void)
+{
+	static volatile char			*str_bin;
+	static volatile unsigned char	*str;
+	volatile unsigned char			c;
+
+	while (server_flag == 0)
+		usleep(1);
+	if (server_flag == 1)
+		append_char((char **)&str_bin, CHAR_ZERO);
+	else if (server_flag == 2)
+		append_char((char **)&str_bin, CHAR_ONE);
+	if (ft_strlen((char *)str_bin) == 8)
+	{
+		c = (unsigned char)ft_atoi_bin((char *)str_bin);
+		append_char_u((unsigned char **)&str, c);
 		if (!c)
 		{
-			ft_putendl_fd_u(str, STDOUT_FILENO);
-			ft_free_str_u(&str);
-			kill(client_pid, SIGUSR2);
+			ft_putendl_fd_u((unsigned char *)str, STDOUT_FILENO);
+			ft_free_str_u((unsigned char **)&str);
 		}
-		ft_free_str(&str_bin);
-		len = 0;
+		ft_free_str((char **)&str_bin);
 	}
+	server_flag = 0;
 }
 
 int
@@ -119,9 +154,11 @@ int
 	char				*pid_str;
 	struct sigaction	sa;
 
-	sigemptyset(&sa.sa_mask);
-	sigaddset(&sa.sa_mask, SIGUSR1);
-	sigaddset(&sa.sa_mask, SIGUSR2);
+	if (sigemptyset(&sa.sa_mask) != 0)
+		exit_with_error_msg(MSG_EMPTYSET_FAILURE);
+	if (sigaddset(&sa.sa_mask, SIGUSR1) != 0
+		|| sigaddset(&sa.sa_mask, SIGUSR2) != 0)
+		exit_with_error_msg(MSG_ADDSET_FAILURE);
 	ft_bzero(&sa, sizeof(sa));
 	sa.sa_sigaction = sig_usr;
 	sa.sa_flags |= SA_RESTART;
@@ -129,19 +166,14 @@ int
 	pid_str = ft_itoa(getpid());
 	if (!pid_str)
 		exit(FAILURE);
-	write(STDOUT_FILENO, pid_str, ft_strlen(pid_str));
-	write(STDOUT_FILENO, "\n", 1);
+	ft_putstr_fd("[Server PID]: ", STDOUT_FILENO);
+	ft_putendl_fd(pid_str, STDOUT_FILENO);
 	ft_free_str(&pid_str);
 	if (sigaction(SIGUSR1, &sa, NULL))
-	{
-		ft_putendl_fd(MSG_USR1_FAILURE, STDERR_FILENO);
-		exit(FAILURE);
-	}
+		exit_with_error_msg(MSG_USR1_FAILURE);
 	if (sigaction(SIGUSR2, &sa, NULL))
-	{
-		ft_putendl_fd(MSG_USR2_FAILURE, STDERR_FILENO);
-		exit(FAILURE);
-	}
+		exit_with_error_msg(MSG_USR2_FAILURE);
 	while (1)
-		pause();
+		run_server();
+	return (SUCCESS);
 }
