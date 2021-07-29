@@ -19,6 +19,9 @@ INCLUDE		:= -I./libft/
 LIBDIR		:= ./libft
 LIBPATH		:= $(LIBDIR)/libft.a
 
+DEBUG		:= -g
+# DEBUG 		:=
+
 RM			:= rm -f
 
 all:			$(NAME)
@@ -26,13 +29,13 @@ all:			$(NAME)
 $(NAME):		$(NAME_SERVER) $(NAME_CLIENT)
 
 $(NAME_SERVER):	$(OBJS_SERVER) $(LIBPATH)
-				$(CC) $(CFLAGS) $(OBJS_SERVER) $(LIBPATH) -o $(NAME_SERVER)
+				$(CC) $(CFLAGS) $(DEBUG) $(OBJS_SERVER) $(LIBPATH) -o $(NAME_SERVER)
 
 $(NAME_CLIENT):	$(OBJS_CLIENT) $(LIBPATH)
-				$(CC) $(CFLAGS) $(OBJS_CLIENT) $(LIBPATH) -o $(NAME_CLIENT)
+				$(CC) $(CFLAGS) $(DEBUG) $(OBJS_CLIENT) $(LIBPATH) -o $(NAME_CLIENT)
 
 .c.o:
-				$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
+				$(CC) $(CFLAGS) $(DEBUG) $(INCLUDE) $(DEBUG) -c $< -o $@
 
 $(LIBPATH):
 				$(MAKE) plus -C $(LIBDIR)
