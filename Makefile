@@ -35,7 +35,7 @@ $(NAME_CLIENT):	$(OBJS_CLIENT) $(LIBPATH)
 				$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
 $(LIBPATH):
-				$(MAKE) -C $(LIBDIR)
+				$(MAKE) plus -C $(LIBDIR)
 
 clean:
 				$(RM) $(OBJS_SERVER) $(OBJS_CLIENT)

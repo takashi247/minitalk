@@ -8,7 +8,7 @@ char
 
 	if (!s1)
 		return (NULL);
-	dup = malloc(sizeof(char) * (ft_strlen(s1) + 1));
+	dup = (char *)malloc(sizeof(char) * (ft_strlen(s1) + 1));
 	if (!dup)
 		return (NULL);
 	head = dup;
