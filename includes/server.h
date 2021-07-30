@@ -16,9 +16,12 @@
 # define MSG_USR2_FAILURE "can't catch SIGUSR2\n"
 # define MSG_EMPTYSET_FAILURE "can't initialize a signal set\n"
 # define MSG_ADDSET_FAILURE "can't add a signal to the set\n"
+# define MSG_SERVER_PROMPT "[Server PID]: "
 # define FLAG_NOSIG 0
 # define FLAG_SIGUSR1 1
 # define FLAG_SIGUSR2 2
+# define BUFFER_TIME 1
+# define MAX_BIT 8
 
 /* util.c */
 void	ft_free_str(char **s);

@@ -24,7 +24,7 @@ LIBDIR		:= ./libft
 LIBPATH		:= $(LIBDIR)/libft.a
 
 DEBUG 		:=
-# DEBUG		:= -g
+# DEBUG		:= -g -fsanitize=address
 
 RM			:= rm -f
 

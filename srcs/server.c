@@ -69,13 +69,13 @@ static void
 	static volatile unsigned char	uc;
 
 	while (g_server_flag == FLAG_NOSIG)
-		usleep(1);
+		usleep(BUFFER_TIME);
 	if (g_server_flag == FLAG_SIGUSR1)
 		uc &= ~(1 << bit_shifter);
 	else if (g_server_flag == FLAG_SIGUSR2)
 		uc |= (1 << bit_shifter);
 	bit_shifter++;
-	if (bit_shifter == 8)
+	if (bit_shifter == MAX_BIT)
 	{
 		append_char_u((unsigned char **)&str_u, uc);
 		if (!uc)
@@ -105,7 +105,7 @@ int
 	pid_str = ft_itoa(getpid());
 	if (!pid_str)
 		exit(FAILURE);
-	ft_putstr_fd("[Server PID]: ", STDOUT_FILENO);
+	ft_putstr_fd(MSG_SERVER_PROMPT, STDOUT_FILENO);
 	ft_putendl_fd(pid_str, STDOUT_FILENO);
 	ft_free_str(&pid_str);
 	while (1)
