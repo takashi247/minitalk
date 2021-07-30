@@ -13,15 +13,15 @@ static void
 		ft_putendl_fd(MSG_SERVER_PID_ERROR, STDERR_FILENO);
 		exit(FAILURE);
 	}
-	bit_shifter = 7;
-	while (0 <= bit_shifter)
+	bit_shifter = 0;
+	while (bit_shifter < 8)
 	{
 		if ((uc >> bit_shifter) & 1)
 			kill(server_pid, SIGUSR2);
 		else
 			kill(server_pid, SIGUSR1);
 		usleep(100);
-		bit_shifter--;
+		bit_shifter++;
 	}
 }
 
