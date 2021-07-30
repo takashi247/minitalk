@@ -20,4 +20,8 @@
 # define FLAG_SIGUSR1 1
 # define FLAG_SIGUSR2 2
 
+/* util.c */
+void	ft_free_str(char **s);
+void	ft_free_str_u(unsigned char **us);
+
 #endif

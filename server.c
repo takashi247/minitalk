@@ -1,21 +1,7 @@
 #include "server.h"
 
-static volatile sig_atomic_t
-	server_flag;
-
-void
-	ft_free_str(char **s)
-{
-	free(*s);
-	*s = NULL;
-}
-
-void
-	ft_free_str_u(unsigned char **us)
-{
-	free(*us);
-	*us = NULL;
-}
+static volatile	sig_atomic_t
+	g_server_flag;
 
 static void
 	append_char_u(unsigned char **s, unsigned char c)
@@ -49,12 +35,12 @@ static void
 	(void)context;
 	if (signo == SIGUSR1)
 	{
-		server_flag = FLAG_SIGUSR1;
+		g_server_flag = FLAG_SIGUSR1;
 		consecutive_zeros++;
 	}
 	else if (signo == SIGUSR2)
 	{
-		server_flag = FLAG_SIGUSR2;
+		g_server_flag = FLAG_SIGUSR2;
 		if (consecutive_zeros)
 			consecutive_zeros = 0;
 	}
@@ -82,11 +68,11 @@ static void
 	static volatile unsigned char	*str_u;
 	static volatile unsigned char	uc;
 
-	while (server_flag == FLAG_NOSIG)
+	while (g_server_flag == FLAG_NOSIG)
 		usleep(1);
-	if (server_flag == FLAG_SIGUSR1)
+	if (g_server_flag == FLAG_SIGUSR1)
 		uc &= ~(1 << bit_shifter);
-	else if (server_flag == FLAG_SIGUSR2)
+	else if (g_server_flag == FLAG_SIGUSR2)
 		uc |= (1 << bit_shifter);
 	bit_shifter++;
 	if (bit_shifter == 8)
@@ -99,7 +85,7 @@ static void
 		}
 		bit_shifter = 0;
 	}
-	server_flag = FLAG_NOSIG;
+	g_server_flag = FLAG_NOSIG;
 }
 
 int

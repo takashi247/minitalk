@@ -1,7 +1,7 @@
 #include "client.h"
 
-static volatile sig_atomic_t
-	client_flag;
+static volatile	sig_atomic_t
+	g_client_flag;
 
 static void
 	send_signal(pid_t server_pid, unsigned char uc)
@@ -30,7 +30,7 @@ static void
 {
 	(void)signo;
 	ft_putendl_fd(MSG_RECEIVE_ACKNOWLEDGEMENT, STDOUT_FILENO);
-	client_flag = 1;
+	g_client_flag = 1;
 }
 
 int
@@ -49,7 +49,7 @@ int
 		ft_putendl_fd(MSG_USR1_FAILURE, STDERR_FILENO);
 		exit(FAILURE);
 	}
-	client_flag = 0;
+	g_client_flag = 0;
 	server_pid = (pid_t)ft_atoi(av[1]);
 	str_u = (unsigned char *)av[2];
 	while (*str_u)
@@ -58,7 +58,7 @@ int
 		str_u++;
 	}
 	send_signal(server_pid, *str_u);
-	while (!client_flag)
+	while (!g_client_flag)
 		usleep(100);
 	return (SUCCESS);
 }

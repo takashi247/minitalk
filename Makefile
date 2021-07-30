@@ -6,7 +6,7 @@ CC 			:= gcc
 
 CFLAGS 		:= -Wall -Wextra -Werror
 
-SRCS_SERVER	:= server.c
+SRCS_SERVER	:= server.c util.c
 
 SRCS_CLIENT	:= client.c
 
