@@ -94,25 +94,20 @@ int
 	char				*pid_str;
 	struct sigaction	sa;
 
-	if (sigemptyset(&sa.sa_mask) != 0)
-		exit_with_error_msg(MSG_EMPTYSET_FAILURE);
-	if (sigaddset(&sa.sa_mask, SIGUSR1) != 0
-		|| sigaddset(&sa.sa_mask, SIGUSR2) != 0)
-		exit_with_error_msg(MSG_ADDSET_FAILURE);
 	ft_bzero(&sa, sizeof(sa));
 	sa.sa_sigaction = sig_usr;
 	sa.sa_flags |= SA_RESTART;
 	sa.sa_flags |= SA_SIGINFO;
+	if (sigaction(SIGUSR1, &sa, NULL))
+		exit_with_error_msg(MSG_USR1_FAILURE);
+	if (sigaction(SIGUSR2, &sa, NULL))
+		exit_with_error_msg(MSG_USR2_FAILURE);
 	pid_str = ft_itoa(getpid());
 	if (!pid_str)
 		exit(FAILURE);
 	ft_putstr_fd("[Server PID]: ", STDOUT_FILENO);
 	ft_putendl_fd(pid_str, STDOUT_FILENO);
 	ft_free_str(&pid_str);
-	if (sigaction(SIGUSR1, &sa, NULL))
-		exit_with_error_msg(MSG_USR1_FAILURE);
-	if (sigaction(SIGUSR2, &sa, NULL))
-		exit_with_error_msg(MSG_USR2_FAILURE);
 	while (1)
 		run_server();
 	return (SUCCESS);

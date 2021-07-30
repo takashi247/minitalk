@@ -6,21 +6,25 @@ CC 			:= gcc
 
 CFLAGS 		:= -Wall -Wextra -Werror
 
+SRCSDIR		:= ./srcs/
+
 SRCS_SERVER	:= server.c util.c
+SRCS_SERVER	:= $(addprefix $(SRCSDIR), $(SRCS_SERVER))
 
 SRCS_CLIENT	:= client.c
+SRCS_CLIENT	:= $(addprefix $(SRCSDIR), $(SRCS_CLIENT))
 
 OBJS_SERVER	:= $(SRCS_SERVER:.c=.o)
 
 OBJS_CLIENT	:= $(SRCS_CLIENT:.c=.o)
 
-INCLUDE		:= -I./libft/
+INCLUDE		:= -I./libft/ -I./includes/
 
 LIBDIR		:= ./libft
 LIBPATH		:= $(LIBDIR)/libft.a
 
-DEBUG		:= -g
-# DEBUG 		:=
+DEBUG 		:=
+# DEBUG		:= -g
 
 RM			:= rm -f
 
