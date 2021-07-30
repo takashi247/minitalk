@@ -17,52 +17,6 @@ void
 	*us = NULL;
 }
 
-int
-	ft_atoi_bin(const char *str)
-{
-	long	l_num;
-	int		is_negative;
-
-	l_num = 0;
-	is_negative = 0;
-	while (*str == '\t' || *str == '\n' || *str == '\v'
-		|| *str == '\f' || *str == '\r' || *str == ' ')
-		str++;
-	if (*str == '+' || *str == '-')
-	{
-		if (*str == '-')
-			is_negative = 1;
-		str++;
-	}
-	while (*str == '0' || *str == '1')
-		l_num = l_num * 2 + (*str++ - '0');
-	if (is_negative)
-		l_num *= -1;
-	return ((int)l_num);
-}
-
-static void
-	append_char(char **s, char c)
-{
-	char	*tmp;
-	char	*new_s;
-
-	if (s)
-	{
-		new_s = (char *)malloc(sizeof(char) * 2);
-		if (!new_s)
-			exit(FAILURE);
-		new_s[0] = c;
-		new_s[1] ='\0';
-		tmp = *s;
-		*s = ft_strjoin(*s, new_s);
-		ft_free_str(&tmp);
-		ft_free_str(&new_s);
-		if (!*s)
-			exit(FAILURE);
-	}
-}
-
 static void
 	append_char_u(unsigned char **s, unsigned char c)
 {
@@ -95,12 +49,12 @@ static void
 	(void)context;
 	if (signo == SIGUSR1)
 	{
-		server_flag = 1;
+		server_flag = FLAG_SIGUSR1;
 		consecutive_zeros++;
 	}
 	else if (signo == SIGUSR2)
 	{
-		server_flag = 2;
+		server_flag = FLAG_SIGUSR2;
 		if (consecutive_zeros)
 			consecutive_zeros = 0;
 	}
@@ -124,28 +78,28 @@ static void
 static void
 	run_server(void)
 {
-	static volatile char			*str_bin;
-	static volatile unsigned char	*str;
-	volatile unsigned char			c;
+	static volatile sig_atomic_t	bit_shifter;
+	static volatile unsigned char	*str_u;
+	static volatile unsigned char	uc;
 
-	while (server_flag == 0)
+	while (server_flag == FLAG_NOSIG)
 		usleep(1);
-	if (server_flag == 1)
-		append_char((char **)&str_bin, CHAR_ZERO);
-	else if (server_flag == 2)
-		append_char((char **)&str_bin, CHAR_ONE);
-	if (ft_strlen((char *)str_bin) == 8)
+	if (server_flag == FLAG_SIGUSR1)
+		uc &= ~(1 << bit_shifter);
+	else if (server_flag == FLAG_SIGUSR2)
+		uc |= (1 << bit_shifter);
+	bit_shifter++;
+	if (bit_shifter == 8)
 	{
-		c = (unsigned char)ft_atoi_bin((char *)str_bin);
-		append_char_u((unsigned char **)&str, c);
-		if (!c)
+		append_char_u((unsigned char **)&str_u, uc);
+		if (!uc)
 		{
-			ft_putendl_fd_u((unsigned char *)str, STDOUT_FILENO);
-			ft_free_str_u((unsigned char **)&str);
+			ft_putendl_fd_u((unsigned char *)str_u, STDOUT_FILENO);
+			ft_free_str_u((unsigned char **)&str_u);
 		}
-		ft_free_str((char **)&str_bin);
+		bit_shifter = 0;
 	}
-	server_flag = 0;
+	server_flag = FLAG_NOSIG;
 }
 
 int
