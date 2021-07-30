@@ -39,7 +39,7 @@ $(NAME_CLIENT):	$(OBJS_CLIENT) $(LIBPATH)
 				$(CC) $(CFLAGS) $(DEBUG) $(OBJS_CLIENT) $(LIBPATH) -o $(NAME_CLIENT)
 
 .c.o:
-				$(CC) $(CFLAGS) $(DEBUG) $(INCLUDE) $(DEBUG) -c $< -o $@
+				$(CC) $(CFLAGS) $(DEBUG) $(INCLUDE) -c $< -o $@
 
 $(LIBPATH):
 				$(MAKE) plus -C $(LIBDIR)
