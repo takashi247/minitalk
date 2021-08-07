@@ -57,7 +57,6 @@ int
 		str_u++;
 	}
 	send_signal(server_pid, *str_u);
-	usleep(BUFFER_TIME);
 	while (!g_client_flag)
 		usleep(BUFFER_TIME);
 	return (SUCCESS);
