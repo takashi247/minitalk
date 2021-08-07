@@ -16,11 +16,11 @@ static void
 	bit_shifter = 0;
 	while (bit_shifter < MAX_BIT)
 	{
+		usleep(BUFFER_TIME);
 		if ((uc >> bit_shifter) & 1)
 			kill(server_pid, SIGUSR2);
 		else
 			kill(server_pid, SIGUSR1);
-		usleep(BUFFER_TIME);
 		bit_shifter++;
 	}
 }
@@ -57,6 +57,7 @@ int
 		str_u++;
 	}
 	send_signal(server_pid, *str_u);
+	usleep(BUFFER_TIME);
 	while (!g_client_flag)
 		usleep(BUFFER_TIME);
 	return (SUCCESS);
