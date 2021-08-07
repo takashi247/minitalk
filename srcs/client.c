@@ -49,7 +49,7 @@ int
 		ft_putendl_fd(MSG_USR1_FAILURE, STDERR_FILENO);
 		exit(FAILURE);
 	}
-	server_pid = (pid_t)ft_atoi(av[1]);
+	server_pid = (pid_t)ft_atoi_s(av[1]);
 	str_u = (unsigned char *)av[2];
 	while (*str_u)
 	{
