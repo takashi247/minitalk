@@ -8,7 +8,7 @@ CFLAGS 		:= -Wall -Wextra -Werror
 
 SRCSDIR		:= ./srcs/
 
-SRCS_SERVER	:= server.c util.c
+SRCS_SERVER	:= server.c
 SRCS_SERVER	:= $(addprefix $(SRCSDIR), $(SRCS_SERVER))
 
 SRCS_CLIENT	:= client.c
